@@ -14,11 +14,13 @@ enum DownloadStatus {IDLE, PROCESSING, NOT_INITIALIZED, FAILED_OR_EMPTY, OK}
 
 class GetRawData extends AsyncTask<String, Void, String> {
     private static final String TAG = "GetRawData";
-
     private DownloadStatus mDownloadStatus;
-    private final MainActivity mCallback;
+    private final OnDownloadComplete mCallback;
+    interface OnDownloadComplete {
+        void onDownloadComplete(String data, DownloadStatus status);
+    }
 
-    public GetRawData(MainActivity callback) {
+    public GetRawData(OnDownloadComplete callback) {
         mDownloadStatus = DownloadStatus.IDLE;
         mCallback = callback;
     }

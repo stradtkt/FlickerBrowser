@@ -1,6 +1,7 @@
 package com.stradtman.flickerbrowser;
 
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -10,7 +11,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-class GetFlickerJsonData implements GetRawData.OnDownloadComplete {
+class GetFlickerJsonData extends AsyncTask<String, Void, List<Photo>> implements GetRawData.OnDownloadComplete {
     private static final String TAG = "GetFlickerJsonData";
     private List<Photo> mPhotoList = null;
     private String mBaseURL;
@@ -36,6 +37,26 @@ class GetFlickerJsonData implements GetRawData.OnDownloadComplete {
         getRawData.execute(destinationUri);
         Log.d(TAG, "executeOnSameThread: ends");
     }
+
+    @Override
+    protected void onPostExecute(List<Photo> photos) {
+        Log.d(TAG, "onPostExecute: starts");
+        if(mCallBack != null) {
+            mCallBack.onDataAvailable(mPhotoList, DownloadStatus.OK);
+        }
+        Log.d(TAG, "onPostExecute: ends");
+    }
+
+    @Override
+    protected List<Photo> doInBackground(String... params) {
+        Log.d(TAG, "doInBackground: starts");
+        String destinationUri = createUri(params[0], mLanguage, mMatchAll);
+        GetRawData getRawData = new GetRawData(this);
+        getRawData.runInSameThread(destinationUri);
+        Log.d(TAG, "doInBackground: ends");
+        return mPhotoList;
+    }
+
     private String createUri(String searchCriteria, String lang, boolean matchAll) {
         Log.d(TAG, "createUri: starts");
         return Uri.parse(mBaseURL).buildUpon()

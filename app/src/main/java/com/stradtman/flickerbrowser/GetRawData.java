@@ -19,12 +19,15 @@ class GetRawData extends AsyncTask<String, Void, String> {
     interface OnDownloadComplete {
         void onDownloadComplete(String data, DownloadStatus status);
     }
-
     public GetRawData(OnDownloadComplete callback) {
         mDownloadStatus = DownloadStatus.IDLE;
         mCallback = callback;
     }
-
+    void runInSameThread(String s) {
+        Log.d(TAG, "runInSameThread: starts");
+        onPostExecute(doInBackground(s));
+        Log.d(TAG, "runInSameThread: ends");
+    }
     @Override
     protected void onPostExecute(String s) {
         Log.d(TAG, "onPostExecute: parameter " + s);
@@ -33,7 +36,6 @@ class GetRawData extends AsyncTask<String, Void, String> {
         }
         Log.d(TAG, "onPostExecute: ends");
     }
-
     @Override
     protected String doInBackground(String... strings) {
         HttpURLConnection connection = null;

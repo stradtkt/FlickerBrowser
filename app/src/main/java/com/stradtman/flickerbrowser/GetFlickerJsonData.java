@@ -17,6 +17,7 @@ class GetFlickerJsonData extends AsyncTask<String, Void, List<Photo>> implements
     private String mBaseURL;
     private String mLanguage;
     private boolean mMatchAll;
+    private boolean runningOnSameThread = false;
 
     private final OnDataAvailable mCallBack;
     interface OnDataAvailable {
@@ -32,6 +33,7 @@ class GetFlickerJsonData extends AsyncTask<String, Void, List<Photo>> implements
     }
     void executeOnSameThread(String searchCriteria) {
         Log.d(TAG, "executeOnSameThread: starts");
+        runningOnSameThread = true;
         String destinationUri = createUri(searchCriteria, mLanguage, mMatchAll);
         GetRawData getRawData = new GetRawData(this);
         getRawData.execute(destinationUri);
@@ -95,7 +97,7 @@ class GetFlickerJsonData extends AsyncTask<String, Void, List<Photo>> implements
                 status = DownloadStatus.FAILED_OR_EMPTY;
             }
         }
-        if(mCallBack != null) {
+        if(runningOnSameThread && mCallBack != null) {
             mCallBack.onDataAvailable(mPhotoList, status);
             Log.d(TAG, "onDownloadComplete: ends");
         }

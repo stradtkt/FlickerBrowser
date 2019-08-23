@@ -1,7 +1,6 @@
 package com.stradtman.flickerbrowser;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -9,6 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -21,8 +22,6 @@ class FlickerRecyclerViewAdapter extends RecyclerView.Adapter<FlickerRecyclerVie
         mContext = context;
         mPhotoList = photoList;
     }
-
-    @NonNull
     @Override
     public FlickerImageViewHolder onCreateViewHolder(ViewGroup parent, int i) {
         Log.d(TAG, "onCreateViewHolder: : new view requested");
@@ -31,8 +30,15 @@ class FlickerRecyclerViewAdapter extends RecyclerView.Adapter<FlickerRecyclerVie
     }
 
     @Override
-    public void onBindViewHolder(FlickerImageViewHolder flickerImageViewHolder, int i) {
-
+    public void onBindViewHolder(FlickerImageViewHolder holder, int position) {
+        Photo photoItem = mPhotoList.get(position);
+        String photo_image_item = photoItem.getImage();
+        Log.d(TAG, "onBindViewHolder: " + photoItem.getTitle() + " --> " + position);
+        Picasso.with(mContext).load(photo_image_item)
+                .error(R.drawable.baseline_image_black_48)
+                .placeholder(R.drawable.baseline_image_black_48)
+                .into(holder.thumbnail);
+        holder.title.setText(photoItem.getTitle());
     }
 
     @Override

@@ -2,15 +2,21 @@ package com.stradtman.flickerbrowser;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements GetFlickerJsonData.OnDataAvailable {
+public class MainActivity extends AppCompatActivity implements GetFlickerJsonData.OnDataAvailable, RecyclerItemClickListener.OnRecyclerClickListener {
     private static final String TAG = "MainActivity";
+    private FlickerRecyclerViewAdapter mFlickerRecyclerViewAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -19,6 +25,12 @@ public class MainActivity extends AppCompatActivity implements GetFlickerJsonDat
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.addOnItemTouchListener(new RecyclerItemClickListener(this, recyclerView, this));
+        mFlickerRecyclerViewAdapter = new FlickerRecyclerViewAdapter(this, new ArrayList<Photo>());
+        recyclerView.setAdapter(mFlickerRecyclerViewAdapter);
 
 //        GetRawData getRawData = new GetRawData(this);
 //        getRawData.execute("https://api.flickr.com/services/feeds/photos_public.gne?tags=android,nougat,sdk&tagmode=any&format=json&nojsoncallback=1");
@@ -58,12 +70,26 @@ public class MainActivity extends AppCompatActivity implements GetFlickerJsonDat
         Log.d(TAG, "onOptionsItemSelected() returned: returned");
         return super.onOptionsItemSelected(item);
     }
+
     @Override
     public void onDataAvailable(List<Photo> data, DownloadStatus status) {
-        if(status == DownloadStatus.OK) {
-            Log.d(TAG, "onDataAvailable: data is " + data);
+        Log.d(TAG, "onDataAvailable: starts");
+        if (status == DownloadStatus.OK) {
+            mFlickerRecyclerViewAdapter.loadNewData(data);
         } else {
             Log.e(TAG, "onDataAvailable: failed with status " + status);
         }
+        Log.d(TAG, "onDataAvailable: ends");
+    }
+
+    public void onItemClick(View view, int position) {
+        Log.d(TAG, "onItemClick: starts");
+        Toast.makeText(MainActivity.this, "Normal tap at position", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onItemLongClick(View view, int position) {
+        Log.d(TAG, "onItemLongClick: starts");
+        Toast.makeText(MainActivity.this, "Long tap at position " + position, Toast.LENGTH_SHORT).show();
     }
 }

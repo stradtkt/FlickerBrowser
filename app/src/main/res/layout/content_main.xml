@@ -9,12 +9,13 @@
     tools:showIn="@layout/activity_main">
 
     <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycler_view"
         android:layout_width="384dp"
         android:layout_height="642dp"
         android:layout_marginStart="14dp"
         android:layout_marginLeft="14dp"
         android:scrollbars="vertical"
         app:layout_constraintStart_toStartOf="parent"
-        tools:layout_editor_absoluteY="12dp"
-        tools:ignore="MissingConstraints" />
+        tools:ignore="MissingConstraints"
+        tools:layout_editor_absoluteY="12dp" />
 </android.support.constraint.ConstraintLayout>
